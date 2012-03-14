@@ -30,6 +30,7 @@
 #import <Foundation/Foundation.h>
 #import "MWFeedInfo.h"
 #import "MWFeedItem.h"
+#import "GDataXMLNode.h"
 
 // Debug Logging
 #if 0 // Set to 1 to enable debug logging
@@ -42,9 +43,8 @@
 #define MWErrorDomain @"MWFeedParser"
 #define MWErrorCodeNotInitiated				1		/* MWFeedParser not initialised correctly */
 #define MWErrorCodeConnectionFailed			2		/* Connection to the URL failed */
-#define MWErrorCodeFeedParsingError			3		/* NSXMLParser encountered a parsing error */
-#define MWErrorCodeFeedValidationError		4		/* NSXMLParser encountered a validation error */
-#define MWErrorCodeGeneral					5		/* MWFeedParser general error */
+#define MWErrorCodeFeedParsingError			3		/* XMLParser encountered a parsing error */
+#define MWErrorCodeGeneral					4		/* MWFeedParser general error */
 
 // Class
 @class MWFeedParser;
@@ -66,7 +66,7 @@ typedef enum { FeedTypeUnknown, FeedTypeRSS, FeedTypeRSS1, FeedTypeAtom } FeedTy
 
 // MWFeedParser
 @interface MWFeedParser : NSObject <NSXMLParserDelegate> {
-
+    
 @private
 	
 	// Required
@@ -75,35 +75,25 @@ typedef enum { FeedTypeUnknown, FeedTypeRSS, FeedTypeRSS1, FeedTypeAtom } FeedTy
 	// Connection
 	NSURLConnection *urlConnection;
 	NSMutableData *asyncData;
-	NSString *asyncTextEncodingName;
 	ConnectionType connectionType;
 	
 	// Parsing
 	ParseType feedParseType;
-	NSXMLParser *feedParser;
 	FeedType feedType;
 	NSDateFormatter *dateFormatterRFC822, *dateFormatterRFC3339;
 	
 	// Parsing State
 	NSURL *url;
-	BOOL aborted; // Whether parse stopped due to abort
 	BOOL parsing; // Whether the MWFeedParser has started parsing
 	BOOL stopped; // Whether the parse was stopped
-	BOOL failed; // Whether the parse failed
 	BOOL parsingComplete; // Whether NSXMLParser parsing has completed
-	BOOL hasEncounteredItems; // Whether the parser has started parsing items
-	
-	// Parsing of XML structure as content
-	NSString *pathOfElementWithXHTMLType; // Hold the path of the element who's type="xhtml" so we can stop parsing when it's ended
-	BOOL parseStructureAsContent; // For atom feeds when element type="xhtml"
 	
 	// Parsing Data
-	NSString *currentPath;
-	NSMutableString *currentText;
-	NSDictionary *currentElementAttributes;
 	MWFeedItem *item;
 	MWFeedInfo *info;
 	
+    // User info
+    NSInteger tag;
 }
 
 #pragma mark Public Properties
@@ -120,11 +110,11 @@ typedef enum { FeedTypeUnknown, FeedTypeRSS, FeedTypeRSS1, FeedTypeAtom } FeedTy
 // Whether parsing was stopped
 @property (nonatomic, readonly, getter=isStopped) BOOL stopped;
 
-// Whether parsing failed
-@property (nonatomic, readonly, getter=didFail) BOOL failed;
-
 // Whether parsing is in progress
 @property (nonatomic, readonly, getter=isParsing) BOOL parsing;
+
+// tag for the delegate
+@property (nonatomic) NSInteger tag;
 
 #pragma mark Public Methods
 

@@ -35,25 +35,18 @@
 @property (nonatomic, copy) NSURL *url;
 @property (nonatomic, retain) NSURLConnection *urlConnection;
 @property (nonatomic, retain) NSMutableData *asyncData;
-@property (nonatomic, retain) NSString *asyncTextEncodingName;
 
 // Parsing Properties
-@property (nonatomic, retain) NSXMLParser *feedParser;
-@property (nonatomic, retain) NSString *currentPath;
-@property (nonatomic, retain) NSMutableString *currentText;
-@property (nonatomic, retain) NSDictionary *currentElementAttributes;
 @property (nonatomic, retain) MWFeedItem *item;
 @property (nonatomic, retain) MWFeedInfo *info;
-@property (nonatomic, copy) NSString *pathOfElementWithXHTMLType;
 
 #pragma mark Private Methods
 
 // Parsing Methods
 - (void)reset;
-- (void)abortParsingEarly;
 - (void)parsingFinished;
 - (void)parsingFailedWithErrorCode:(int)code andDescription:(NSString *)description;
-- (void)startParsingData:(NSData *)data textEncodingName:(NSString *)textEncodingName;
+- (void)startParsingData:(NSData *)data;
 
 // Dispatching to Delegate
 - (void)dispatchFeedInfoToDelegate;
@@ -62,7 +55,7 @@
 // Error Handling
 
 // Misc
-- (BOOL)createEnclosureFromAttributes:(NSDictionary *)attributes andAddToItem:(MWFeedItem *)currentItem;
-- (BOOL)processAtomLink:(NSDictionary *)attributes andAddToMWObject:(id)MWObject;
+- (BOOL)createEnclosureFromAttributes:(GDataXMLElement *)attributes andAddToItem:(MWFeedItem *)currentItem;
+- (BOOL)processAtomLink:(GDataXMLElement *)attributes andAddToMWObject:(id)MWObject;
 
 @end
