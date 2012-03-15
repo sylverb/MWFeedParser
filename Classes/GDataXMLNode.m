@@ -366,7 +366,7 @@ static xmlChar *SplitQNameReverse(const xmlChar *qname, xmlChar **prefix) {
     
     // allocate a new NSString for this xmlChar*
     result = [NSString stringWithUTF8String:(const char *) chars];
-    if (cacheDict) {
+    if ((cacheDict) && (result)) {
         // save the string in the document's string cache
         CFDictionarySetValue(cacheDict, chars, result);
     }
